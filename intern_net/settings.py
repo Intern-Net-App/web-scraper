@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 # Scrapy settings for intern_net project
 #
 # For simplicity, this file contains only settings considered important or
@@ -14,7 +19,7 @@ NEWSPIDER_MODULE = "intern_net.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "intern_net (+http://www.intern-net.works)"
+# USER_AGENT = "intern_net (+http://www.intern-net.works)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -92,3 +97,14 @@ ROBOTSTXT_OBEY = False
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+SCRAPEOPS_API_KEY = os.getenv("SCRAPEOPS_API_KEY")
+SCRAPEOPS_PROXY_ENABLED = True
+
+DOWNLOADER_MIDDLEWARES = {
+    'scrapeops_scrapy_proxy_sdk.scrapeops_scrapy_proxy_sdk.ScrapeOpsScrapyProxySdk': 725,
+}
+
+ITEM_PIPELINES = {
+    'intern_net.pipelines.MongoDBPipeline': 300,  # Adjust the priority as needed
+}
