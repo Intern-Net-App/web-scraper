@@ -1,18 +1,29 @@
+import os
 import scrapy
+from dotenv import load_dotenv
+from intern_net.items import LinkedInJob
 
+load_dotenv()
 class LinkedInSpider(scrapy.Spider):
-  name = "linkedin_jobs"
-  api_url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=software%2Bengineer%2Bintern&location=Canada&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&start='
+  name = "linkedin_spider"
+  target_url = os.getenv("TARGET_URL")
+
   
   def start_requests(self):
     first_job_on_page = 0
-    first_url = self.api_url + str(first_job_on_page)
-    yield scrapy.Request(url=first_url, callback=self.parse_job, meta={'first_job_on_page': first_job_on_page})
+    first_url = self.target_url + str(first_job_on_page)
+    yield scrapy.Request(
+      url=first_url, 
+      callback=self.parse_job, 
+      meta={
+        'first_job_on_page': first_job_on_page
+        }
+      )
     
   def parse_job(self, response):
     first_job_on_page = response.meta['first_job_on_page']
     
-    job_item = {}
+    job_item = LinkedInJob()
     jobs = response.css("li")
     
     num_jobs_returned = len(jobs)
@@ -27,3 +38,8 @@ class LinkedInSpider(scrapy.Spider):
       job_item['company_link'] = job.css('h4 a::attr(href)').get(default='not-found')
       job_item['company_location'] = job.css('.job-search-card__location::text').get(default='not-found').strip()
       yield job_item
+      
+    # if num_jobs_returned > 0:
+    #     first_job_on_page = int(first_job_on_page) + 25
+    #     next_url = self.target_url + str(first_job_on_page)
+    #     yield scrapy.Request(url=next_url, callback=self.parse_job, meta={'first_job_on_page': first_job_on_page})
