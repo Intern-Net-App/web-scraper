@@ -2,6 +2,7 @@ import re
 import json
 import scrapy
 from urllib.parse import urlencode
+from indeed_scraper.items import IndeedJob
 
 
 class IndeedJobSpider(scrapy.Spider):
@@ -72,29 +73,17 @@ class IndeedJobSpider(scrapy.Spider):
 
         if script_tag:
             json_blob = json.loads(script_tag[0])
-            job = json_blob["jobInfoWrapperModel"]["jobInfoModel"]
-            job2 = json_blob["jobInfoWrapperModel"]["jobInfoModel"]["jobInfoHeaderModel"]
+            job_details = json_blob["jobInfoWrapperModel"]["jobInfoModel"]["jobInfoHeaderModel"]
+            job_apply_link = json_blob["viewJobButtonLinkContainerModel"]["viewJobButtonLinkModel"]
+            
             
 
-            job_title = job.get('formattedTitle')  # Extracting job title from the formattedTitle attribute
-            company = job.get('truncatedCompany')  # Extracting truncated company name
+        
+            job_item = IndeedJob()
 
-            # Check the type of 'sanitizedJobDescription'
-            sanitized_job_description = job.get('sanitizedJobDescription')
-            if isinstance(sanitized_job_description, str):
-                job_description = sanitized_job_description  # If it's a string, use it directly
-            elif isinstance(sanitized_job_description, dict):
-                job_description = sanitized_job_description.get('content', '')  # If it's a dictionary, extract 'content'
-            else:
-                job_description = ''  # Handle other cases if necessary
-
-            yield {
-                'keyword': keyword,
-                'location': location,
-                'page': page,
-                'position': position,
-                'company': job2.get('companyName'),
-                'jobkey': response.meta['jobKey'],
-                'jobTitle': job2.get('jobTitle'),
-                'jobDescription': job_description
-            }
+            job_item['job_title'] = job_details.get('jobTitle')
+            job_item['company_name'] = job_details.get('companyName')
+            job_item['company_location'] = job_details.get('formattedLocation')
+            job_item['company_link'] = job_details.get('companyOverviewLink')
+            job_item['job_detail_url'] = job_apply_link.get('href')
+            yield job_item

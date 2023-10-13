@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 # Scrapy settings for quotes_js_scraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -24,6 +28,10 @@ SCRAPEOPS_PROXY_ENABLE = True
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapeops_scrapy_proxy_sdk.scrapeops_scrapy_proxy_sdk.ScrapeOpsScrapyProxySdk': 725,
+}
+
+ITEM_PIPELINES = {
+    'indeed_scraper.pipelines.MongoDBPipeline': 300,  # Adjust the priority as needed
 }
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
