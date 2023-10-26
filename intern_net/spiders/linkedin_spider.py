@@ -37,6 +37,7 @@ class LinkedInSpider(scrapy.Spider):
       job_item['company_name'] = job.css('h4 a::text').get(default='not-found').strip()
       job_item['company_link'] = job.css('h4 a::attr(href)').get(default='not-found')
       job_item['company_location'] = job.css('.job-search-card__location::text').get(default='not-found').strip()
+      job_item['site'] = "LinkedIn"
       yield job_item
       
     # if num_jobs_returned > 0:

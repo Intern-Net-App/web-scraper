@@ -38,7 +38,7 @@ class MongoDBPipeline:
         self.client.close()
         
     def process_item(self, item, spider):
-        collection = self.db['linkedin_jobs']
+        collection = self.db['jobs']
         data = dict(item)
         collection.insert_one(data)
         return item
