@@ -7,9 +7,6 @@ from intern_net.items import IndeedJob
 
 class IndeedJobSpider(scrapy.Spider):
     name = "indeed_jobs"
-    custom_settings = {
-        'FEEDS': {'data/%(name)s_%(time)s.csv': {'format': 'csv', }}
-    }
 
     def get_indeed_search_url(self, keyword, location, offset=0):
         parameters = {"q": keyword, "l": location, "filter": 0, "start": offset}
